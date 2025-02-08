@@ -1,0 +1,10 @@
+[
+    {
+        "id": "TRANSACTION_1",
+        "customerId": "CUSTOMER_A",
+        "productOd": "PRODUCT_X",
+        "units": 1,
+        "costPerUnit": 10,
+        "transactionDate": "2025-01-01T00:00:00.000Z"
+    }
+]
