@@ -1,0 +1,18 @@
+[
+    {
+        "id": "PAYMENT_1",
+        "transactionId": "TRANSACTION_1",
+        "status": "REJECTED",
+        "mode": "AMEX",
+        "amount": 9.8,
+        "paymentDate": "2025-01-01T00:30:00.000Z"
+    },
+    {
+        "id": "PAYMENT_2",
+        "transactionId": "TRANSACTION_1",
+        "status": "ACCEPTED",
+        "mode": "VISA",
+        "amount": 10.2,
+        "paymentDate": "2025-01-01T01:40:00.000Z"
+    }
+]

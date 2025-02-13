@@ -3,4 +3,6 @@ bootstrap:
 
 topics:
   transaction:
-    name: transaction
+    name: txn
+  payment:
+    name: pay

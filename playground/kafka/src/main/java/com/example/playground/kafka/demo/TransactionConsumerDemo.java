@@ -2,7 +2,7 @@ package com.example.playground.kafka.demo;
 
 import com.example.playground.kafka.config.KafkaProperties;
 import com.example.playground.kafka.model.Transaction;
-import com.example.playground.kafka.serde.DefaultDeserializer;
+import com.example.playground.kafka.serde.CustomJsonDeserializer;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -14,7 +14,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 
-import static com.example.playground.kafka.serde.DefaultDeserializer.CUSTOM_VALUE_DESERIALIZER_TYPE;
+import static com.example.playground.kafka.serde.CustomJsonDeserializer.CUSTOM_VALUE_DESERIALIZER_TYPE;
 
 
 public class TransactionConsumerDemo {
@@ -34,7 +34,7 @@ public class TransactionConsumerDemo {
         properties.put("client.id", "transaction-consumer@playground");
         properties.put("group.id", "transaction-consumer@playground");
         properties.put("key.deserializer", StringDeserializer.class);
-        properties.put("value.deserializer", DefaultDeserializer.class);
+        properties.put("value.deserializer", CustomJsonDeserializer.class);
         properties.put(CUSTOM_VALUE_DESERIALIZER_TYPE, Transaction.class);
 
         try (Consumer<String, Transaction> consumer = new KafkaConsumer<>(properties)) {

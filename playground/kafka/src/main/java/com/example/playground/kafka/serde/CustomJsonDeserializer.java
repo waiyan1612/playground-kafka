@@ -8,22 +8,28 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-public class DefaultDeserializer<T> implements Deserializer<T> {
+public class CustomJsonDeserializer<T> implements Deserializer<T> {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultDeserializer.class);
+    private static final Logger log = LoggerFactory.getLogger(CustomJsonDeserializer.class);
     public static final String CUSTOM_VALUE_DESERIALIZER_TYPE = "value.deserializer.type";
 
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private Class<T> targetType;
 
-    public DefaultDeserializer () {
-        objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    public CustomJsonDeserializer() {
+
+    }
+
+    public CustomJsonDeserializer(Class<T> targetType) {
+        this.targetType = targetType;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void configure(Map<String, ?> configs, boolean isKey) {
-        targetType = (Class<T>) configs.get(CUSTOM_VALUE_DESERIALIZER_TYPE);
+        if (targetType == null) {
+            targetType = (Class<T>) configs.get(CUSTOM_VALUE_DESERIALIZER_TYPE);
+        }
     }
 
     @Override

@@ -9,12 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DefaultSerializer<T> implements Serializer<T> {
+public class CustomJsonSerializer<T> implements Serializer<T> {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultSerializer.class);
+    private static final Logger log = LoggerFactory.getLogger(CustomJsonSerializer.class);
     private final ObjectMapper objectMapper;
 
-    public DefaultSerializer() {
+    public CustomJsonSerializer() {
         objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     }
 
