@@ -1,0 +1,10 @@
+[
+    {
+        "id": "PAYMENT_1A",
+        "transactionId": "TRANSACTION_WHERE_FIRST_PAY_WILL_FAIL_AND_SECOND_WILL_PASS",
+        "status": "REJECTED",
+        "mode": "AMEX",
+        "amount": 9.8,
+        "paymentDate": "2025-01-01T00:30:00.000Z"
+    }
+]

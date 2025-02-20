@@ -11,11 +11,11 @@ public class TransactionProducerDemo {
     }
 
     public static void produceRandom() {
-        DemoHelper.sendPostRequest("/txn/random", "");
+        ProducerHelper.sendPostRequest("/txn/random", "");
     }
 
     public static void produceFromJson() throws IOException, URISyntaxException {
-        String jsonPayload = DemoHelper.getJsonPayload("data/transactions.json");
-        DemoHelper.sendPostRequest("/txn", jsonPayload);
+        String jsonPayload = ProducerHelper.getJsonPayload("data/transactions.json");
+        ProducerHelper.sendPostRequest("/txn", jsonPayload);
     }
 }

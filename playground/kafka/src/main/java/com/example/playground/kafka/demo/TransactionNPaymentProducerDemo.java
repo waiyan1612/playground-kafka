@@ -1,25 +1,48 @@
 package com.example.playground.kafka.demo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 public class TransactionNPaymentProducerDemo {
 
-    public static void main(String[] args) throws IOException, URISyntaxException {
+    private static final Logger log = LoggerFactory.getLogger(TransactionNPaymentProducerDemo.class);
+
+    public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
         produceFromJson();
-        produceRandom();
+//        produceRandom();
     }
 
     public static void produceRandom() {
-        DemoHelper.sendPostRequest("/txn/random", "");
-        DemoHelper.sendPostRequest("/pay/random", "");
+        ProducerHelper.sendPostRequest("/txn/random", "");
+        ProducerHelper.sendPostRequest("/pay/random", "");
     }
 
-    public static void produceFromJson() throws IOException, URISyntaxException {
-        String txnPayload = DemoHelper.getJsonPayload("data/transactions.json");
-        DemoHelper.sendPostRequest("/txn", txnPayload);
+    public static void produceFromJson() throws IOException, URISyntaxException, InterruptedException {
 
-        String payPayload = DemoHelper.getJsonPayload("data/payments.json");
-        DemoHelper.sendPostRequest("/pay", payPayload);
+        // Send all transactions at 00:00
+        int sleepSeconds = 0;
+        String txnPayload = ProducerHelper.getJsonPayload("data/transactions.json");
+        ProducerHelper.sendPostRequest("/txn", txnPayload);
+        log.info("Sent txn payload");
+
+        // Send payment 1A at 00:10
+        sleepSeconds = 10;
+        log.info("Sleeping {} seconds", sleepSeconds);
+        Thread.sleep(sleepSeconds * 1000L);
+
+        ProducerHelper.sendPostRequest("/pay", ProducerHelper.getJsonPayload("data/payments-1a.json"));
+        log.info("Sent payment 1a");
+
+        // Send payment 1B and 2 at 00:30
+        sleepSeconds = 20;
+        log.info("Sleeping {} seconds", sleepSeconds);
+        Thread.sleep(sleepSeconds * 1000L);
+
+        ProducerHelper.sendPostRequest("/pay", ProducerHelper.getJsonPayload("data/payments-1b.json"));
+        ProducerHelper.sendPostRequest("/pay", ProducerHelper.getJsonPayload("data/payments-2.json"));
+        log.info("Sent payment 1b and 2");
     }
 }
