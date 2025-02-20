@@ -20,6 +20,15 @@ public class ConsumerHelper {
 
     }
 
+    protected static void deleteConsumerGroupId(Properties properties) {
+        try {
+            KafkaAdmin.deleteConsumerGroupId(properties.getProperty(StreamsConfig.APPLICATION_ID_CONFIG));
+        } catch (InterruptedException e) {
+            log.error("Failed to delete consumer group id: {}", e.getMessage(), e);
+            Thread.currentThread().interrupt();
+        }
+    }
+
     protected static void resetConsumerOffsets(Properties properties, String... topics) {
         Arrays.stream(topics).forEach(
             topic -> {

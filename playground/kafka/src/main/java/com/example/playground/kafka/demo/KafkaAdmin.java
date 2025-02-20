@@ -29,13 +29,17 @@ public class KafkaAdmin {
     }
 
     public static void main(String [] args) throws InterruptedException, ExecutionException {
-        createTopics();
-//        deleteConsumerGroupId("");
-//        deleteTopics();
+//        createTopics();
+        deleteTopics();
     }
 
-    protected static void deleteConsumerGroupId(String consumerGroupId) {
-        admin.deleteConsumerGroups(List.of(consumerGroupId));
+    protected static void deleteConsumerGroupId(String consumerGroupId) throws InterruptedException {
+        DeleteConsumerGroupsResult deleteTopicsResult = admin.deleteConsumerGroups(List.of(consumerGroupId));
+        while (!deleteTopicsResult.all().isDone()) {
+            log.info("Pending deletion");
+            Thread.sleep(5000);
+        }
+        log.info("Completed deletion");
     }
 
     protected static void setConsumerOffsetLatest(String consumerGroupId, String topic) throws ExecutionException, InterruptedException {

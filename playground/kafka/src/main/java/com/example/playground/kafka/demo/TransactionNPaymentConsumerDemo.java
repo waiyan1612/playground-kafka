@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -43,16 +44,21 @@ public class TransactionNPaymentConsumerDemo {
 
     public static void main(String[] args) {
 
+        boolean addRandomSuffix = true;
+        String optSuffix = addRandomSuffix ? "-" + UUID.randomUUID() : "";
+        optSuffix = "-9f800929-9153-443e-9f88-a25c078f19b1";
+        log.info("{} will be appended to the application.id", optSuffix);
+
         Properties streamXStreamProps = new Properties();
-        streamXStreamProps.put(StreamsConfig.APPLICATION_ID_CONFIG, "txn-pay-stream-x-stream");
+        streamXStreamProps.put(StreamsConfig.APPLICATION_ID_CONFIG, "txn-pay-stream-x-stream" + optSuffix);
         streamXStreamProps.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getServers());
 
         Properties tableXTableProps = new Properties();
-        tableXTableProps.put(StreamsConfig.APPLICATION_ID_CONFIG, "txn-pay-table-x-table");
+        tableXTableProps.put(StreamsConfig.APPLICATION_ID_CONFIG, "txn-pay-table-x-table" + optSuffix);
         tableXTableProps.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getServers());
 
         Properties streamXTableProps = new Properties();
-        streamXTableProps.put(StreamsConfig.APPLICATION_ID_CONFIG, "txn-pay-stream-x-table");
+        streamXTableProps.put(StreamsConfig.APPLICATION_ID_CONFIG, "txn-pay-stream-x-table" + optSuffix);
         streamXTableProps.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getServers());
 
         try (ExecutorService executorService = Executors.newFixedThreadPool(3)) {
@@ -84,7 +90,6 @@ public class TransactionNPaymentConsumerDemo {
         );
         joinedTbl.toStream().peek((key, value) -> log.info("tableXTable: joinedTbl contents: {}:{}", key, value));
 
-        ConsumerHelper.resetConsumerOffsets(properties, kafkaProperties.getTxnTopic(), kafkaProperties.getPayTopic());
         ConsumerHelper.startKafkaStreams(builder.build(), properties);
     }
 
@@ -99,6 +104,8 @@ public class TransactionNPaymentConsumerDemo {
         payStream.peek((key, value) -> log.info("streamXStream: payStream contents: {}:{}:{}", key, value.id(), value.status()));
         int windowSize = 20;
         int advanceSize = 5;
+
+        // check https://kafka.apache.org/20/documentation/streams/developer-guide/dsl-api.html#streams-developer-guide-dsl-joins-co-partitioning
 
         TimeWindows tumblingWindow = TimeWindows.ofSizeAndGrace(Duration.ofSeconds(windowSize), Duration.ofSeconds(0));
         TimeWindows hoppingWindow = TimeWindows.ofSizeAndGrace(Duration.ofSeconds(windowSize), Duration.ofSeconds(0)).advanceBy(Duration.ofSeconds(advanceSize));
@@ -120,7 +127,6 @@ public class TransactionNPaymentConsumerDemo {
         joinedStream.filter((key, value) -> value.missingTxn()).peek((key, value) -> log.info("streamXStream: Missing txn: {}", value));
         joinedStream.filter((key, value) -> value.missingPay()).peek((key, value) -> log.info("streamXStream: Missing pay: {}", value));
 
-        ConsumerHelper.resetConsumerOffsets(properties, kafkaProperties.getTxnTopic(), kafkaProperties.getPayTopic());
         ConsumerHelper.startKafkaStreams(builder.build(), properties);
     }
 
@@ -140,7 +146,6 @@ public class TransactionNPaymentConsumerDemo {
 //        );
 //        joinedTbl.toStream().peek((key, value) -> log.info("joinedTbl contents: {}:{}", key, value));
 
-        ConsumerHelper.resetConsumerOffsets(properties, kafkaProperties.getTxnTopic(), kafkaProperties.getPayTopic());
         ConsumerHelper.startKafkaStreams(builder.build(), properties);
     }
 

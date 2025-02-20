@@ -57,6 +57,9 @@ Supported Joins
 ### Out-of-order records and grace period
 - [Difference between increasing join window size and setting grace period](https://stackoverflow.com/a/73539852)
 
+### Consumer groups and offsets 
+- [Offsets of deleted consumer groups do not get deleted correctly](https://lists.apache.org/thread/rd3q2j3gxl31z5hhctzclqwbk0bhkc3w)
+
 Scenario
 
 Window is 20s. No grace period, late data will be rejected.
@@ -69,3 +72,5 @@ Window is 20s. No grace period, late data will be rejected.
 | 00:30     | Send `PAYMENT_1B` for `TRANSACTION_WHERE_FIRST_PAY_WILL_FAIL_AND_SECOND_WILL_PASS`.                                                                                                               |                                                                          |                                                                  |                                                    |
 |           | Send `PAYMENT_2` for `TRANSACTION_WHERE_FIRST_PAY_WILL_MISS_THE_WINDOW`.                                                                                                                          |                                                                          |                                                                  |                                                    |
 | 00:40     | Window Ends.                                                                                                                                                                                      | Expects to be joined with `PAYMENT_1B` and **update** to downstream      | Expects to be joined with `PAYMENT_2` and **send** to downstream | Stay in the retry / DLQ topic or a Global KTable   |
+
+https://github.com/confluentinc/ksql/issues/2306#issuecomment-451126057
