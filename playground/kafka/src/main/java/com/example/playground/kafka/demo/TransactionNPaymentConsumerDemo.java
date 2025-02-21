@@ -64,7 +64,7 @@ public class TransactionNPaymentConsumerDemo {
         try (ExecutorService executorService = Executors.newFixedThreadPool(3)) {
             log.info("Starting threads in the background ...");
             executorService.submit(() -> streamXStream(streamXStreamProps));
-//            executorService.submit(() -> tableXTable(tableXTableProps));
+            executorService.submit(() -> tableXTable(tableXTableProps));
 //            executorService.submit(() -> streamXTable(streamXTableProps));
 
             // Shutdown hook to clean up
@@ -85,10 +85,9 @@ public class TransactionNPaymentConsumerDemo {
         KTable<String, TransactionXPayment> joinedTbl = txnTbl.join(
             payTbl,
             TransactionNPaymentConsumerDemo::joinTxnPay,
-            Materialized.as("umm")
+            Materialized.as("txn-table-x-pay-table")
         );
         joinedTbl.toStream().peek((key, value) -> log.info("tableXTable: joinedTbl contents: {}:{}", key, value));
-
         ConsumerHelper.startKafkaStreams(builder.build(), properties);
     }
 

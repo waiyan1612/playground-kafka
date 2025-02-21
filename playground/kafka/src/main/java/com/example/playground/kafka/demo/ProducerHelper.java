@@ -1,5 +1,6 @@
 package com.example.playground.kafka.demo;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
@@ -19,8 +20,16 @@ public class ProducerHelper {
     }
 
     public static void sendPostRequest(String apiUrl, String jsonPayload) {
+        sendRequest(apiUrl, jsonPayload, HttpMethod.POST);
+    }
+
+    public static void sendDeleteRequest(String apiUrl, String jsonPayload) {
+       sendRequest(apiUrl, jsonPayload, HttpMethod.DELETE);
+    }
+
+    private static void sendRequest(String apiUrl, String jsonPayload, HttpMethod method) {
         WebClient webClient = WebClient.builder().baseUrl("http://localhost:8080").build();
-        webClient.post()
+        webClient.method(method)
                 .uri(apiUrl)
                 .header("Content-Type", "application/json")
                 .bodyValue(jsonPayload)

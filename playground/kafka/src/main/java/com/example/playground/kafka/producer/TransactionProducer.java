@@ -41,12 +41,29 @@ public class TransactionProducer {
         transactions.forEach(this::send);
     }
 
+    public void delete(List<Transaction> transactions) {
+        transactions.forEach(this::delete);
+    }
+
     private void send(Transaction txn) {
         try {
             ProducerRecord<String, Transaction> producerRecord = new ProducerRecord<>(txnTopic, txn.id(), txn);
             RecordMetadata metadata = producer.send(producerRecord).get();
             log.info("Record {} sent to partition {} with offset {}",
                     txn, metadata.partition(), metadata.offset());
+        } catch (ExecutionException e) {
+            log.error("Error in sending record: {}", e.getMessage(), e);
+        } catch (InterruptedException e) {
+            log.error("Interrupted :{}", e.getMessage(), e);
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void delete(Transaction txn) {
+        try {
+            ProducerRecord<String, Transaction> producerRecord = new ProducerRecord<>(txnTopic, txn.id(), null);
+            RecordMetadata metadata = producer.send(producerRecord).get();
+            log.info("Null Record sent to partition {} with offset {}", metadata.partition(), metadata.offset());
         } catch (ExecutionException e) {
             log.error("Error in sending record: {}", e.getMessage(), e);
         } catch (InterruptedException e) {

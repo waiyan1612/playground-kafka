@@ -1,14 +1,15 @@
-package com.example.playground.kafka.demo;
+package com.example.playground.kafka.demo.ktable;
 
+import com.example.playground.kafka.demo.ProducerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-public class TransactionNPaymentProducerDemo {
+public class TxnNPayProducer {
 
-    private static final Logger log = LoggerFactory.getLogger(TransactionNPaymentProducerDemo.class);
+    private static final Logger log = LoggerFactory.getLogger(TxnNPayProducer.class);
 
     public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
         produceFromJson();
