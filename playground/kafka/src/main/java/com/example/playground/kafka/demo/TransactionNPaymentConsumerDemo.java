@@ -84,9 +84,8 @@ public class TransactionNPaymentConsumerDemo {
 
         KTable<String, TransactionXPayment> joinedTbl = txnTbl.join(
             payTbl,
-            TransactionNPaymentConsumerDemo::joinTxnPay
-//                joinWindows
-//                TableJoined.with(Serdes.String(), txnSerde, paySerde)
+            TransactionNPaymentConsumerDemo::joinTxnPay,
+            Materialized.as("umm")
         );
         joinedTbl.toStream().peek((key, value) -> log.info("tableXTable: joinedTbl contents: {}:{}", key, value));
 
@@ -157,12 +156,11 @@ public class TransactionNPaymentConsumerDemo {
         if (pay != null) {
             paymentId = pay.id();
             paymentStatus = pay.status();
-        } if (txn != null) {
+        }
+        if (txn != null) {
             transactionId = txn.id();
             customerId = txn.customerId();
         }
         return new TransactionXPayment(transactionId, paymentId, customerId, paymentStatus);
     }
-
-
 }

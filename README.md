@@ -1,4 +1,4 @@
-# playground-java
+# playground-kafka
 
 A playground to quickly test kafka producers and consumers.
 
@@ -74,3 +74,11 @@ Window is 20s. No grace period, late data will be rejected.
 | 00:40     | Window Ends.                                                                                                                                                                                      | Expects to be joined with `PAYMENT_1B` and **update** to downstream      | Expects to be joined with `PAYMENT_2` and **send** to downstream | Stay in the retry / DLQ topic or a Global KTable   |
 
 https://github.com/confluentinc/ksql/issues/2306#issuecomment-451126057
+
+
+https://verticalserve.medium.com/kafka-streams-optimizing-rocksdb-99a6cc14bc93
+https://blog.dy.engineering/kafka-streams-and-rocksdb-in-the-space-time-continuum-and-a-little-bit-of-configuration-40edb5ee9ed7
+https://stackoverflow.com/questions/76534424/ktable-how-does-that-work-behind-the-scenes
+
+[How to expire KTable rows based on TTL in Kafka Streams](https://developer.confluent.io/confluent-tutorials/schedule-ktable-ttl/kstreams/)
+https://forum.confluent.io/t/when-do-ktable-records-expire-if-you-dont-tombstone-them/6967
