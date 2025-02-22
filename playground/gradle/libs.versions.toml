@@ -1,5 +1,5 @@
 [versions]
-springBoot = "3.4.2"
+springBoot = "3.4.3"
 junit = "5.11.4"
 mockito = "5.15.2"
 springdoc = "2.8.4"
