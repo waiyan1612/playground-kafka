@@ -1,6 +1,6 @@
 [versions]
 springBoot = "3.4.2"
-junit = "5.11.4"
+junit = "5.12.0"
 mockito = "5.15.2"
 springdoc = "2.8.4"
 kafka = "3.9.0"
