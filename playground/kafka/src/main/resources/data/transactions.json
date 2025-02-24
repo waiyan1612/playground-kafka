@@ -1,6 +1,6 @@
 [
     {
-        "id": "TRANSACTION_1",
+        "id": "TRANSACTION_WHERE_FIRST_PAY_WILL_FAIL_AND_SECOND_WILL_PASS",
         "customerId": "CUSTOMER_A",
         "productId": "PRODUCT_X",
         "units": 1,
@@ -8,10 +8,18 @@
         "transactionDate": "2025-01-01T00:00:00.000Z"
     },
     {
-        "id": "TRANSACTION_2",
+        "id": "TRANSACTION_WHERE_FIRST_PAY_WILL_MISS_THE_WINDOW",
         "customerId": "CUSTOMER_A",
         "productId": "PRODUCT_Y",
         "units": 10,
+        "costPerUnit": 2,
+        "transactionDate": "2025-01-01T01:00:00.000Z"
+    },
+    {
+        "id": "TRANSACTION_WHERE_PAYMENT_WILL_NVR_BE_MADE",
+        "customerId": "CUSTOMER_C",
+        "productId": "PRODUCT_Z",
+        "units": 100000,
         "costPerUnit": 2,
         "transactionDate": "2025-01-01T01:00:00.000Z"
     }

@@ -42,6 +42,10 @@ public class PaymentProducer {
         payments.forEach(this::send);
     }
 
+    public void delete(List<Payment> payments) {
+        payments.forEach(this::delete);
+    }
+
     private void send(Payment payment) {
         try {
             // NOTE: MESSAGE KEY is transactionId, not paymentId. This is because for stream x stream joins,
@@ -52,6 +56,20 @@ public class PaymentProducer {
             RecordMetadata metadata = producer.send(producerRecord).get();
             log.info("Record {} sent to partition {} with offset {}",
                     payment, metadata.partition(), metadata.offset());
+        } catch (ExecutionException e) {
+            log.error("Error in sending record: {}", e.getMessage(), e);
+        } catch (InterruptedException e) {
+            log.error("Interrupted :{}", e.getMessage(), e);
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public void delete(Payment payment) {
+        try {
+            // Send null value for a given key,
+            ProducerRecord<String, Payment> producerRecord = new ProducerRecord<>(paymentTopic, payment.transactionId(), null);
+            RecordMetadata metadata = producer.send(producerRecord).get();
+            log.info("Null Record sent to partition {} with offset {}", metadata.partition(), metadata.offset());
         } catch (ExecutionException e) {
             log.error("Error in sending record: {}", e.getMessage(), e);
         } catch (InterruptedException e) {

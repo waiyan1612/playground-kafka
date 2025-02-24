@@ -1,7 +1,6 @@
 package com.example.playground.kafka.demo;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
@@ -11,28 +10,36 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
-public class DemoHelper {
+/***
+ * Helper class for producer such as reading json and making REST calls
+ */
+public class ProducerHelper {
 
-    private static final Logger log = LoggerFactory.getLogger(DemoHelper.class);
-
-    private DemoHelper() {
+    private ProducerHelper() {
 
     }
 
     public static void sendPostRequest(String apiUrl, String jsonPayload) {
+        sendRequest(apiUrl, jsonPayload, HttpMethod.POST);
+    }
+
+    public static void sendDeleteRequest(String apiUrl, String jsonPayload) {
+       sendRequest(apiUrl, jsonPayload, HttpMethod.DELETE);
+    }
+
+    private static void sendRequest(String apiUrl, String jsonPayload, HttpMethod method) {
         WebClient webClient = WebClient.builder().baseUrl("http://localhost:8080").build();
-        String response = webClient.post()
+        webClient.method(method)
                 .uri(apiUrl)
                 .header("Content-Type", "application/json")
                 .bodyValue(jsonPayload)
                 .retrieve()
                 .bodyToMono(String.class)
                 .block(); // Blocking call (use reactive handling for async)
-        log.info("Response: {}", response);
     }
 
     public static String getJsonPayload(String jsonClassPath) throws IOException, URISyntaxException {
-        Path jsonPath = Paths.get(Objects.requireNonNull(TransactionProducerDemo.class.getClassLoader().getResource(jsonClassPath)).toURI());
+        Path jsonPath = Paths.get(Objects.requireNonNull(ProducerHelper.class.getClassLoader().getResource(jsonClassPath)).toURI());
         return new String(Files.readAllBytes(jsonPath));
     }
 }

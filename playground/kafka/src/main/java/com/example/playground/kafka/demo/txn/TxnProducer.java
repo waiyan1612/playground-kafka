@@ -1,9 +1,11 @@
-package com.example.playground.kafka.demo;
+package com.example.playground.kafka.demo.txn;
+
+import com.example.playground.kafka.demo.ProducerHelper;
 
 import java.io.*;
 import java.net.URISyntaxException;
 
-public class TransactionProducerDemo {
+public class TxnProducer {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
         produceFromJson();
@@ -11,11 +13,11 @@ public class TransactionProducerDemo {
     }
 
     public static void produceRandom() {
-        DemoHelper.sendPostRequest("/txn/random", "");
+        ProducerHelper.sendPostRequest("/txn/random", "");
     }
 
     public static void produceFromJson() throws IOException, URISyntaxException {
-        String jsonPayload = DemoHelper.getJsonPayload("data/transactions.json");
-        DemoHelper.sendPostRequest("/txn", jsonPayload);
+        String jsonPayload = ProducerHelper.getJsonPayload("data/transactions.json");
+        ProducerHelper.sendPostRequest("/txn", jsonPayload);
     }
 }

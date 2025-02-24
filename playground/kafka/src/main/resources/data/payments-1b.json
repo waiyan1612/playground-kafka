@@ -1,0 +1,10 @@
+[
+    {
+        "id": "PAYMENT_1B",
+        "transactionId": "TRANSACTION_WHERE_FIRST_PAY_WILL_FAIL_AND_SECOND_WILL_PASS",
+        "status": "ACCEPTED",
+        "mode": "VISA",
+        "amount": 10.2,
+        "paymentDate": "2025-01-01T01:40:00.000Z"
+    }
+]

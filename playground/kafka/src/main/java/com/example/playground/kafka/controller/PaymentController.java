@@ -3,10 +3,7 @@ package com.example.playground.kafka.controller;
 import com.example.playground.kafka.model.Payment;
 import com.example.playground.kafka.producer.PaymentProducer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -33,11 +30,15 @@ public class PaymentController {
         paymentProducer.send(payments);
     }
 
+    @DeleteMapping
+    public void delete(@RequestBody List<Payment> payments) {
+        paymentProducer.delete(payments);
+    }
+
     @PostMapping("/random")
     public void postRandom() {
         @SuppressWarnings("OptionalGetWithoutIsPresent")
         int totalPayments = random.ints(0, 10).findFirst().getAsInt();
-
 
         List<Payment> payments = new ArrayList<>(totalPayments);
         for(int i=0; i<totalPayments; i++) {

@@ -1,4 +1,4 @@
-# playground-java
+# playground-kafka
 
 A playground to quickly test kafka producers and consumers.
 
@@ -24,8 +24,11 @@ Other commonly used commands.
 
 ## Demo producers and consumers 
 
-- [Producers](playground/kafka/src/main/java/com/example/playground/kafka/producer) are initiated as part of the spring boot application can be triggered via REST calls.
+[Producers](playground/kafka/src/main/java/com/example/playground/kafka/producer) are initiated as part of the spring boot application can be triggered via REST calls.
   - [Swagger UI](http://localhost:8080/swagger-ui/index.html#/)
-- [Demo](playground/kafka/src/main/java/com/example/playground/kafka/demo) producers and consumers can be triggered as standalone applications.
+
+Demo producers and consumers can be triggered as standalone applications.
+- [KTable Demo](playground/kafka/src/main/java/com/example/playground/kafka/demo/ktable/README.md)
+- [KStream Demo](playground/kafka/src/main/java/com/example/playground/kafka/demo/kstream/README.md)
 
 ---

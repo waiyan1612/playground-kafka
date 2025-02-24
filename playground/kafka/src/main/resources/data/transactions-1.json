@@ -1,0 +1,10 @@
+[
+    {
+        "id": "TRANSACTION_WHERE_FIRST_PAY_WILL_MISS_THE_WINDOW",
+        "customerId": "CUSTOMER_A",
+        "productId": "PRODUCT_X",
+        "units": 1,
+        "costPerUnit": 10,
+        "transactionDate": "2025-01-01T00:00:00.000Z"
+    }
+]

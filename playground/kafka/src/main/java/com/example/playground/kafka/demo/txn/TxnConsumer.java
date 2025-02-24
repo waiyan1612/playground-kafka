@@ -1,4 +1,4 @@
-package com.example.playground.kafka.demo;
+package com.example.playground.kafka.demo.txn;
 
 import com.example.playground.kafka.config.KafkaProperties;
 import com.example.playground.kafka.model.Transaction;
@@ -17,9 +17,9 @@ import java.util.Properties;
 import static com.example.playground.kafka.serde.CustomJsonDeserializer.CUSTOM_VALUE_DESERIALIZER_TYPE;
 
 
-public class TransactionConsumerDemo {
+public class TxnConsumer {
 
-    private static final Logger log = LoggerFactory.getLogger(TransactionConsumerDemo.class);
+    private static final Logger log = LoggerFactory.getLogger(TxnConsumer.class);
 
     public static void main(String[] args) {
         KafkaProperties kafkaProperties = new KafkaProperties();
@@ -32,9 +32,10 @@ public class TransactionConsumerDemo {
         Properties properties = new Properties();
         properties.put("bootstrap.servers", servers);
         properties.put("client.id", "transaction-consumer@playground");
-        properties.put("group.id", "transaction-consumer@playground");
+        properties.put("group.id", "transaction-consumer@playground89kjgiugbvjukg");
         properties.put("key.deserializer", StringDeserializer.class);
         properties.put("value.deserializer", CustomJsonDeserializer.class);
+        properties.put("auto.offset.reset", "earliest");
         properties.put(CUSTOM_VALUE_DESERIALIZER_TYPE, Transaction.class);
 
         try (Consumer<String, Transaction> consumer = new KafkaConsumer<>(properties)) {
