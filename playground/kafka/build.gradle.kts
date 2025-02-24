@@ -23,6 +23,7 @@ dependencies {
 
     // Libraries
     implementation(libs.kafka)
+    implementation(libs.kafka.streams)
 
     // For Docs
     implementation(libs.spring.doc)

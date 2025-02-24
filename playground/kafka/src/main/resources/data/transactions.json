@@ -2,9 +2,17 @@
     {
         "id": "TRANSACTION_1",
         "customerId": "CUSTOMER_A",
-        "productOd": "PRODUCT_X",
+        "productId": "PRODUCT_X",
         "units": 1,
         "costPerUnit": 10,
         "transactionDate": "2025-01-01T00:00:00.000Z"
+    },
+    {
+        "id": "TRANSACTION_2",
+        "customerId": "CUSTOMER_A",
+        "productId": "PRODUCT_Y",
+        "units": 10,
+        "costPerUnit": 2,
+        "transactionDate": "2025-01-01T01:00:00.000Z"
     }
 ]

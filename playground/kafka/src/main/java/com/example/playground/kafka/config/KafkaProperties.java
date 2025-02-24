@@ -14,6 +14,8 @@ public class KafkaProperties {
 
     private final String txnTopic;
 
+    private final String payTopic;
+
     public KafkaProperties() {
         YamlPropertiesFactoryBean yamlFactory = new YamlPropertiesFactoryBean();
         yamlFactory.setResources(new ClassPathResource("kafka.yaml"));
@@ -21,6 +23,7 @@ public class KafkaProperties {
 
         servers = yamlProperties.getProperty("bootstrap.servers");
         txnTopic = yamlProperties.getProperty("topics.transaction.name");
+        payTopic = yamlProperties.getProperty("topics.payment.name");
     }
 
     public String getServers() {
@@ -29,5 +32,9 @@ public class KafkaProperties {
 
     public String getTxnTopic() {
         return txnTopic;
+    }
+
+    public String getPayTopic() {
+        return payTopic;
     }
 }
