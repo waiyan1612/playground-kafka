@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="DATE_TIME_FORMAT_PATTERN">yyyy/MM/dd HH:mm:ss.SSS</Property>
+        <!-- traceID and spanId are predefined MDC keys. requestId is our custom key from RequestIdFilter -->
+        <Property name="APP_LOG_PATTERN">%d{${DATE_TIME_FORMAT_PATTERN}} %p [%t] [%c{1}] %m %throwable%n</Property>
+    </Properties>
+    <Appenders>
+        <Console name="ConsoleApp" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${sys:APP_LOG_PATTERN}"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="ConsoleApp"/>
+        </Root>
+    </Loggers>
+</Configuration>

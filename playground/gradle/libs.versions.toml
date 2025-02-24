@@ -1,0 +1,25 @@
+[versions]
+springBoot = "3.4.2"
+junit = "5.11.4"
+mockito = "5.15.2"
+springdoc = "2.8.4"
+kafka = "3.9.0"
+
+[libraries]
+kafka = { module = "org.apache.kafka:kafka_2.13", version.ref = "kafka" }
+
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api"}
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine"}
+
+mockito-bom = { module = "org.mockito:mockito-bom", version.ref = "mockito" }
+mockito-core = { module = "org.mockito:mockito-core" }
+mockito-junit = { module = "org.mockito:mockito-junit-jupiter" }
+
+spring-doc = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
+
+[bundles]
+
+
+[plugins]
+springBoot = { id = "org.springframework.boot",  version.ref = "springBoot" }
