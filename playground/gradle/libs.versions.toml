@@ -2,7 +2,7 @@
 springBoot = "3.4.2"
 junit = "5.11.4"
 mockito = "5.15.2"
-springdoc = "2.8.4"
+springdoc = "2.8.5"
 kafka = "3.9.0"
 
 [libraries]
