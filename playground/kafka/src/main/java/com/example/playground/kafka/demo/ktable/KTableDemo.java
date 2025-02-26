@@ -94,7 +94,10 @@ public class KTableDemo {
         }
         if (debug) {
             joinedTbl.toStream().peek((key, value) -> log.info("tableXTable: joinedTbl contents: {}:{}", key, value));
+            joinedTbl.toStream().to("ktable-demo");
+            joinedTbl.toStream().filter((key, value) -> value != null).to("ktable-demo-no-tombstones");
         }
+
         Topology streamTopology =  builder.build();
 
         // Can use open-source tools like
