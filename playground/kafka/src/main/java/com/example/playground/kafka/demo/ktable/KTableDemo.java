@@ -84,6 +84,17 @@ public class KTableDemo {
                         .withKeySerde(Serdes.String()).withValueSerde(txnXPaySerde)
         );
 
+        // If we want to use foreign key join, it is supported for left and inner joins, but not for the outer join
+        // And the left should have the details to join. In the example below, we have swapped the sides for txn and pay.
+        // https://www.confluent.io/blog/data-enrichment-with-kafka-streams-foreign-key-joins/
+        KTable<String, TransactionXPayment> foreignKeyJoinedTbl = payTbl.leftJoin(
+                txnTbl,
+                Payment::transactionId,
+                (pay, txn) -> TransactionXPayment.fromTransactionAndPayment(txn, pay),
+                Materialized.<String, TransactionXPayment>as(Stores.persistentKeyValueStore(storeName))
+                        .withKeySerde(Serdes.String()).withValueSerde(txnXPaySerde)
+        );
+
         if (expireTxn) {
             ProcessorSupplier<String, Transaction, String, Transaction> processorSupplier = new ExpiryProcessorSupplier<>(txnExpiryStoreName, 3 * 60_000L);
             txnTbl.toStream().process(processorSupplier).to(kafkaProperties.getTxnTopic(), Produced.with(Serdes.String(), txnSerde));
