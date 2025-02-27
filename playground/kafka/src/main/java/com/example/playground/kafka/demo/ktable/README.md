@@ -17,7 +17,10 @@
    > - `TRANSACTION_WHERE_FIRST_PAY_WILL_MISS_THE_WINDOW` should show `PAYMENT_2`
    > - `TRANSACTION_WHERE_PAYMENT_WILL_NVR_BE_MADE` should show `null` for the payment since there is no payment related data for this.
 
-By default, KTable and its state store are updated every 30 seconds (`commit.interval.ms`).
+### When is KTable updated?
+- KTables update state whenever a new record arrives, but writes to the changelog topic happen in batches, by default every 30 seconds (`commit.interval.ms`).
+- If caching is enabled, the KTable buffers updates in-memory and writes in batches (flushing on commit interval or when cache is full).
+- If KTable is piping back to a topic (via a stream), new records are written to the topic for each update happening on KTable (new records, update on certain fields, tombstones for left / right table). 
 
 ### When are entries removed from KTable?
 
@@ -28,8 +31,10 @@ By default, KTable and its state store are updated every 30 seconds (`commit.int
 | When tombstone messages are sent to `txn` and `pay`       | ✅ Yes    | See below.                                                                                                                                                            |
 
 Continue from step 4, execute the below steps.   
+
 5. Run [PayTombstoneProducer](../pay/PayTombstoneProducer.java).
    > Observe that `TRANSACTION_WHERE_FIRST_PAY_WILL_FAIL_AND_SECOND_WILL_PASS` no longer shows `PAYMENT_1` information.
+
 6. Run [TxnTombstoneProducer](../txn/TxnTombstoneProducer.java).
    > Observe that `TRANSACTION_WHERE_FIRST_PAY_WILL_FAIL_AND_SECOND_WILL_PASS` is no longer present in the KTable since both sides of the join no longer have the data.
 
