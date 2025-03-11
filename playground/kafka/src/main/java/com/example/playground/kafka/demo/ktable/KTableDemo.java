@@ -113,7 +113,7 @@ public class KTableDemo {
 
         // Can use open-source tools like
         // https://zz85.github.io/kafka-streams-viz/
-        log.info("Topology: {}", streamTopology.describe());
+        log.info("Topology\n========\n{}", streamTopology.describe());
 
         // Build streams from the topology
         final CountDownLatch latch = new CountDownLatch(3);

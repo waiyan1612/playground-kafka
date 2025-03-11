@@ -9,10 +9,7 @@ import com.example.playground.kafka.serde.CustomJsonDeserializer;
 import com.example.playground.kafka.serde.CustomJsonSerializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.*;
 import org.apache.kafka.streams.kstream.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +62,7 @@ public class KStreamDemo {
         KStream<String, Transaction> txnStream = builder.stream(kafkaProperties.getTxnTopic(), Consumed.with(Serdes.String(), txnSerde));
         KStream<String, Payment> payStream = builder.stream(kafkaProperties.getPayTopic(), Consumed.with(Serdes.String(), paySerde));
 
-        int windowSize = 20;
+        int windowSize = 10;
         int advanceSize = 5;
         // check https://kafka.apache.org/20/documentation/streams/developer-guide/dsl-api.html#streams-developer-guide-dsl-joins-co-partitioning
         TimeWindows tumblingWindow = TimeWindows.ofSizeAndGrace(Duration.ofSeconds(windowSize), Duration.ofSeconds(0));
@@ -79,13 +76,42 @@ public class KStreamDemo {
         );
         if (debug) {
             joinedStream.peek((key, value) -> log.info("streamXstream: joinedTbl contents: {}:{}", key, value));
+
+            String txnRetryTopic = "kstream-retry-txn";
+            String payRetryTopic = "kstream-retry-pay";
+            joinedStream.filter((key, value) -> value.missingPay())
+                    .map((key, value) -> new KeyValue<>(key, new Transaction(
+                            value.transactionId(),
+                            value.customerId(),
+                            null,
+                            null,
+                            null,
+                            null
+                    )))
+                    .to(txnRetryTopic, Produced.with(Serdes.String(), txnSerde));
+
+            joinedStream.filter((key, value) -> value.missingTxn())
+                    .map((key, value) -> new KeyValue<>(key, new Payment(
+                            key,
+                            value.paymentId(),
+                            value.paymentStatus(),
+                            null,
+                            null,
+                            null
+                    )))
+                    .to(payRetryTopic, Produced.with(Serdes.String(), paySerde));
+
+            KStream<String, TransactionXPayment> completeJoinedStream = joinedStream.filter((key, value) -> value.isComplete());
+            completeJoinedStream.to("kstream-demo", Produced.with(Serdes.String(), txnXPaySerde));
+            completeJoinedStream.map((k,v) -> new KeyValue<String, Transaction>(k, null)).to(txnRetryTopic, Produced.with(Serdes.String(), txnSerde));
+            completeJoinedStream.map((k,v) -> new KeyValue<String, Payment>(k, null)).to(payRetryTopic, Produced.with(Serdes.String(), paySerde));
         }
 
         Topology streamTopology =  builder.build();
 
         // Can use open-source tools like
         // https://zz85.github.io/kafka-streams-viz/
-        log.info("Topology: {}", streamTopology.describe());
+        log.info("Topology\n========\n{}", streamTopology.describe());
 
         // Build streams from the topology
         final CountDownLatch latch = new CountDownLatch(3);
