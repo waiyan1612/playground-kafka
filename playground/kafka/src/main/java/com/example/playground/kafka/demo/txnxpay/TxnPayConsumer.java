@@ -27,7 +27,8 @@ public class TxnPayConsumer {
         String servers = kafkaProperties.getServers();
         List<String> topics = List.of(
 //            "ktable-demo",
-            "ktable-demo-no-tombstones"
+//            "kstream-demo",
+//            "ktable-demo-no-tombstones"
         );
         log.info("Bootstrap servers: {}", servers);
         log.info("Topics to subscribe: {}", topics);
