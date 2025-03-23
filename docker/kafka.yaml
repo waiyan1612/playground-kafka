@@ -1,6 +1,6 @@
 services:
   kafka:
-    image: "apache/kafka:${KAFKA_VERSION}"
+    image: "apache/kafka:3.9.0"
     hostname: kafka-standalone
     container_name: kafka-standalone
     ports:
