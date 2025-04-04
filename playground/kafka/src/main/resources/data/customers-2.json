@@ -1,0 +1,12 @@
+[
+    {
+        "id": "CUSTOMER_C",
+        "displayName": "Carol",
+        "shippingAddress": "Cape Town"
+    },
+    {
+        "id": "CUSTOMER_A",
+        "displayName": "Alice",
+        "shippingAddress": "Antarctica"
+    }
+]

@@ -2,9 +2,7 @@ package com.example.playground.kafka.demo.ktable;
 
 import com.example.playground.kafka.config.KafkaProperties;
 import com.example.playground.kafka.demo.ConsumerHelper;
-import com.example.playground.kafka.model.Payment;
-import com.example.playground.kafka.model.Transaction;
-import com.example.playground.kafka.model.TransactionXPayment;
+import com.example.playground.kafka.model.*;
 import com.example.playground.kafka.serde.CustomJsonDeserializer;
 import com.example.playground.kafka.serde.CustomJsonSerializer;
 import org.apache.kafka.common.serialization.Serde;
@@ -39,8 +37,16 @@ public class KTableDemo {
             new CustomJsonDeserializer<>(Payment.class)
     );
 
+    private static final Serde<Customer> customerSerde = Serdes.serdeFrom(new CustomJsonSerializer<>(),
+            new CustomJsonDeserializer<>(Customer.class)
+    );
+
     private static final Serde<TransactionXPayment> txnXPaySerde = Serdes.serdeFrom(new CustomJsonSerializer<>(),
             new CustomJsonDeserializer<>(TransactionXPayment.class)
+    );
+
+    private static final Serde<TransactionXPaymentXCustomer> txnXPayXCustSerde = Serdes.serdeFrom(new CustomJsonSerializer<>(),
+            new CustomJsonDeserializer<>(TransactionXPaymentXCustomer.class)
     );
 
     public static void main(String[] args) {
@@ -56,7 +62,8 @@ public class KTableDemo {
         final boolean expirePay = false;
 
         final String appId = "txn-pay-table-x-table";
-        final String storeName = "txn-x-pay-tbl-store";
+        final String txnPayStoreName = "txn-pay-tbl-store";
+        final String txnPayCustomerStoreName = "txn-pay-cust-tbl-store";
         final String txnExpiryStoreName = "txn-tbl-expiry-store";
         final String payExpiryStoreName = "pay-tbl-expiry-store";
 
@@ -72,27 +79,29 @@ public class KTableDemo {
         StreamsBuilder builder = new StreamsBuilder();
         KTable<String, Transaction> txnTbl = builder.table(kafkaProperties.getTxnTopic(), Consumed.with(Serdes.String(), txnSerde));
         KTable<String, Payment> payTbl = builder.table(kafkaProperties.getPayTopic(), Consumed.with(Serdes.String(), paySerde));
+        // Customer Table cannot be a GlobalKtable because KTable x GlobalKTable join is not supported.
+        KTable<String, Customer> customerTbl = builder.table(kafkaProperties.getCustomerTopic(), Consumed.with(Serdes.String(), customerSerde));
         if (debug) {
             txnTbl.toStream().peek((key, value) -> log.info("tableXTable: txnTbl contents: {}:{}", key, value));
             payTbl.toStream().peek((key, value) -> log.info("tableXTable: payTbl contents: {}:{}", key, value));
         }
 
-        KTable<String, TransactionXPayment> joinedTbl = txnTbl.outerJoin(
+        KTable<String, TransactionXPayment> txnPayTbl = txnTbl.outerJoin(
                 payTbl,
                 TransactionXPayment::fromTransactionAndPayment,
-                Materialized.<String, TransactionXPayment>as(Stores.persistentKeyValueStore(storeName))
+                Materialized.<String, TransactionXPayment>as(Stores.persistentKeyValueStore(txnPayStoreName))
                         .withKeySerde(Serdes.String()).withValueSerde(txnXPaySerde)
         );
 
-        // If we want to use foreign key join, it is supported for left and inner joins, but not for the outer join
-        // And the left should have the details to join. In the example below, we have swapped the sides for txn and pay.
+        // This is a foreign key join using, it is supported for left and inner joins, but not for the outer join
+        // And the left should provide a way for the Foreign Key Extractor Function.
         // https://www.confluent.io/blog/data-enrichment-with-kafka-streams-foreign-key-joins/
-        KTable<String, TransactionXPayment> foreignKeyJoinedTbl = payTbl.leftJoin(
-                txnTbl,
-                Payment::transactionId,
-                (pay, txn) -> TransactionXPayment.fromTransactionAndPayment(txn, pay),
-                Materialized.<String, TransactionXPayment>as(Stores.persistentKeyValueStore(storeName))
-                        .withKeySerde(Serdes.String()).withValueSerde(txnXPaySerde)
+        KTable<String, TransactionXPaymentXCustomer> txnPayXCustomerTbl = txnPayTbl.leftJoin(
+                customerTbl,
+                TransactionXPayment::customerId,
+                TransactionXPaymentXCustomer::fromTransactionXPaymentAndCustomer,
+                Materialized.<String, TransactionXPaymentXCustomer>as(Stores.persistentKeyValueStore(txnPayCustomerStoreName))
+                        .withKeySerde(Serdes.String()).withValueSerde(txnXPayXCustSerde)
         );
 
         if (expireTxn) {
@@ -104,9 +113,12 @@ public class KTableDemo {
             payTbl.toStream().process(processorSupplier).to(kafkaProperties.getPayTopic(), Produced.with(Serdes.String(), paySerde));
         }
         if (debug) {
-            joinedTbl.toStream().peek((key, value) -> log.info("tableXTable: joinedTbl contents: {}:{}", key, value));
-            joinedTbl.toStream().to("ktable-demo");
-            joinedTbl.toStream().filter((key, value) -> value != null).to("ktable-demo-no-tombstones");
+            txnPayTbl.toStream().peek((key, value) -> log.info("tableXTable: txnPayTbl contents: {}:{}", key, value));
+            txnPayTbl.toStream().to("ktable-demo-txnPayTbl");
+//            txnPayTbl.toStream().filter((key, value) -> value != null).to("ktable-demo-txnPayTbl-no-tombstones");
+
+            txnPayXCustomerTbl.toStream().peek((key, value) -> log.info("tableXTable: txnPayXCustomerTbl contents: {}:{}", key, value));
+            txnPayXCustomerTbl.toStream().to("ktable-demo-txnPayXCustomerTbl");
         }
 
         Topology streamTopology =  builder.build();
@@ -123,7 +135,7 @@ public class KTableDemo {
                 // This is to start the kafka stream and keep it running.
                 executorService.submit(() -> ConsumerHelper.startKafkaStreams(streams, latch));
                 // This is to check local store.
-                executorService.submit(() -> readTableFromStore(streams, storeName));
+                executorService.submit(() -> readTableFromStore(streams, txnPayStoreName));
                 // Shutdown hook to clean up
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     executorService.shutdown();

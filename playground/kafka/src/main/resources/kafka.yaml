@@ -6,3 +6,5 @@ topics:
     name: txn
   payment:
     name: pay
+  customer:
+    name: user

@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-public class TxnXPayProducer {
+public class TxnPayProducer {
 
-    private static final Logger log = LoggerFactory.getLogger(TxnXPayProducer.class);
+    private static final Logger log = LoggerFactory.getLogger(TxnPayProducer.class);
 
     public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
         produceFromJson();

@@ -1,8 +1,9 @@
-package com.example.playground.kafka.demo.txnxpay;
+package com.example.playground.kafka.demo.txnxpayxcustomer;
 
 import com.example.playground.kafka.config.KafkaProperties;
 import com.example.playground.kafka.model.Transaction;
 import com.example.playground.kafka.model.TransactionXPayment;
+import com.example.playground.kafka.model.TransactionXPaymentXCustomer;
 import com.example.playground.kafka.serde.CustomJsonDeserializer;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -18,15 +19,15 @@ import java.util.Properties;
 import static com.example.playground.kafka.serde.CustomJsonDeserializer.CUSTOM_VALUE_DESERIALIZER_TYPE;
 
 
-public class TxnPayConsumer {
+public class TxnPayCustomerConsumer {
 
-    private static final Logger log = LoggerFactory.getLogger(TxnPayConsumer.class);
+    private static final Logger log = LoggerFactory.getLogger(TxnPayCustomerConsumer.class);
 
     public static void main(String[] args) {
         KafkaProperties kafkaProperties = new KafkaProperties();
         String servers = kafkaProperties.getServers();
         List<String> topics = List.of(
-//            "ktable-demo-txnPayTbl",
+            "ktable-demo-txnPayXCustomerTbl"
 //            "kstream-demo",
 //            "ktable-demo-no-tombstones"
         );
@@ -35,12 +36,12 @@ public class TxnPayConsumer {
 
         Properties properties = new Properties();
         properties.put("bootstrap.servers", servers);
-        properties.put("client.id", "txnpay-consumer@playground");
-        properties.put("group.id", "txnpay-consumer@playground");
+        properties.put("client.id", "txnpaycust-consumer@playground");
+        properties.put("group.id", "txnpaycust-consumer@playground");
         properties.put("key.deserializer", StringDeserializer.class);
         properties.put("value.deserializer", CustomJsonDeserializer.class);
         properties.put("auto.offset.reset", "earliest");
-        properties.put(CUSTOM_VALUE_DESERIALIZER_TYPE, TransactionXPayment.class);
+        properties.put(CUSTOM_VALUE_DESERIALIZER_TYPE, TransactionXPaymentXCustomer.class);
 
         try (Consumer<String, Transaction> consumer = new KafkaConsumer<>(properties)) {
             consumer.subscribe(topics);
