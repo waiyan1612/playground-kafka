@@ -1,9 +1,9 @@
 [versions]
-springBoot = "3.4.5"
+springBoot = "3.5.0"
 junit = "5.12.2"
-mockito = "5.17.0"
-springdoc = "2.8.6"
-kafka = "3.9.0"
+mockito = "5.18.0"
+springdoc = "2.8.8"
+kafka = "3.9.1"
 
 [libraries]
 kafka = { module = "org.apache.kafka:kafka_2.13", version.ref = "kafka" }
